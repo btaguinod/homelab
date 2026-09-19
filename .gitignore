@@ -44,3 +44,4 @@ terraform.rc
 # planout
 
 terraform.tfvars
+secret.auto.pkrvars.hcl

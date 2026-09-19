@@ -25,7 +25,7 @@ resource "proxmox_download_file" "ubuntu_cloud_image" {
     content_type = "iso"
     datastore_id = "local"
     node_name = "server-1"
-    url = "https://cloud-images.ubuntu.com/releases/resolute/release/ubuntu-26.04-server-cloudimg-amd64.img"
+    url          = "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
 }
 
 resource "proxmox_virtual_environment_vm" "benedict_lab" {
@@ -37,8 +37,8 @@ resource "proxmox_virtual_environment_vm" "benedict_lab" {
     }
 
     memory {
-        dedicated = 8192
-        floating = 8192
+        dedicated = 6144
+        floating = 6144
     }
 
     disk {
@@ -46,21 +46,20 @@ resource "proxmox_virtual_environment_vm" "benedict_lab" {
         file_id = proxmox_download_file.ubuntu_cloud_image.id
         interface = "scsi0"
         size = 50
-        file_format = "qcow2"
     }
 
     network_device {
         bridge = "vmbr0"
     }
 
-    agent {
-      enabled = false
-    }
+    # should be true if qemu agent is not installed / enabled on the VM
+    stop_on_destroy = true
 
     initialization {
         ip_config {
           ipv4 {
-            address = "dhcp"
+            address = "10.127.0.8/24"
+            gateway = "10.127.0.1"
           }
         }
         user_account {
