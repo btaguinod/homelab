@@ -1,0 +1,15 @@
+api:
+  # TODO: disable insecure dashboard
+  insecure: true
+  disableDashboardAd: true
+
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections: # Global HTTP -> HTTPS redirect
+        entryPoint:
+          to: "websecure"
+          scheme: "https"
+  websecure:
+    address: ":443"
