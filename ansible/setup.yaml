@@ -1,0 +1,21 @@
+- name: Server setup
+  hosts: swarm
+  become: true
+  tasks:
+    - name: Install Docker and Python SDK
+      ansible.builtin.package:
+        name:
+          - docker.io
+          - python3-docker
+        state: present
+
+    - name: Ensure Docker service is running and enabled
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Init a new swarm with default parameters
+      community.docker.docker_swarm:
+        state: present
+        advertise_addr: "{{ ansible_host }}"
