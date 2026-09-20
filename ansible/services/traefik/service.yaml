@@ -14,7 +14,7 @@
         src: traefik.yaml
         dest: /etc/traefik/traefik.yaml
         mode: '0644'
-      # TODO: remove restart traefik once static config if finalized
+      # TODO: remove restart traefik once static config if finalized. Remove handler too
       notify: Restart Traefik
 
     - name: Start Traefik container
