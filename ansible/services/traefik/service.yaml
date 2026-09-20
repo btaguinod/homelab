@@ -3,18 +3,6 @@
   hosts: swarm
   become: true
   tasks: 
-    # - name: Create Traefik directory
-    #   ansible.builtin.file:
-    #     path: /etc/traefik
-    #     state: directory
-    #     mode: '0755'
-
-    # - name: Copy Traefik static configuration
-    #   ansible.builtin.copy:
-    #     src: traefik.yaml
-    #     dest: /etc/traefik/traefik.yaml
-    #     mode: '0644'
-
     - name: Start Traefik container
       community.docker.docker_container:
         name: traefik
@@ -25,7 +13,5 @@
           - "80:80"
           - "443:443"
           - "8080:8080"
-        # volumes:
-        #   - "/etc/traefik:/etc/traefik:ro"
         command:
           - "--api.insecure=true"
