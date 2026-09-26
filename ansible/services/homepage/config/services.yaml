@@ -1,0 +1,42 @@
+- Infrastructure & Security:
+    - Authelia:
+        icon: sh-authelia-light.png
+        href: "https://authelia.benedict-lab.com"
+        description: "Authentication & authorization server"
+    - Vaultwarden:
+        icon: vaultwarden-light.png
+        href: "https://vaultwarden.benedict-lab.com"
+        description: "Password management"
+    - Gatus:
+        icon: sh-gatus-light.png
+        href: "https://gatus.benedict-lab.com"
+        description: "Automated service health dashboard"
+
+- Management & Core:
+    - Dokploy:
+        icon: sh-dokploy-light.png
+        href: "https://dokploy.benedict-lab.com"
+        description: "Application deployment platform"
+- AI & Automation:
+    - Open WebUI:
+        icon: https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/dark/openwebui.png
+        href: "https://open-webui.benedict-lab.com"
+        description: "Interface for Ollama"
+    - Hermes:
+        icon: https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/dark/hermesagent.png
+        href: "https://hermes.benedict-lab.com"
+        description: "Messaging & communications"
+    - n8n:
+        icon: sh-n8n-light.png
+        href: "https://n8n.benedict-lab.com"
+        description: "Automation"
+
+- Tools & Utilities:
+    - IT-Tools:
+        icon: sh-it-tools-light.png
+        href: "https://ittools.benedict-lab.com"
+        description: "Handy online tools for developers"
+    - Omni-Tools:
+        icon: mdi-tools-#ffffff
+        href: "https://omnitools.benedict-lab.com"
+        description: "Utility toolset"

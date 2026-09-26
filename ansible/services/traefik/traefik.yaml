@@ -13,3 +13,14 @@ entryPoints:
           scheme: "https"
   websecure:
     address: ":443"
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      storage: acme.json
+      dnsChallenge:
+        provider: namecheap
+
+providers:
+  docker:
+    exposedByDefault: false

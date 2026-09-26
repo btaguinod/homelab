@@ -1,0 +1,43 @@
+# TODO: check if there's a way make sure this playbook isn't run without setup
+- name: Hompage install
+  hosts: swarm
+  become: true
+  tasks: 
+    - name: Create Homepage directory
+      ansible.builtin.file:
+        path: /etc/homepage
+        state: directory
+
+    - name: Copy homepage configuration
+      ansible.builtin.copy:
+        src: config/
+        dest: /etc/homepage/
+        # TODO: remove when config doesn't need hot reload
+      notify: Restart Homepage
+
+
+    - name: Start Homepage container
+      community.docker.docker_container:
+        name: homepage
+        image: ghcr.io/gethomepage/homepage:v2.4.0
+        state: started
+        restart_policy: always
+        published_ports:
+          - "3000:3000"
+        volumes:
+          - "/etc/homepage:/app/config"
+        env:
+          HOMEPAGE_ALLOWED_HOSTS: homepage.new.benedict-lab.com,10.127.0.8:3000
+        labels:
+          traefik.enable: "true"          
+          traefik.http.routers.api-service-router.rule: "Host(`homepage.new.benedict-lab.com`)"          
+          traefik.http.routers.api-service-router.entrypoints: "websecure"          
+          traefik.http.services.api-service-backend.loadbalancer.server.port: "3000"
+          traefik.http.routers.api-service-router.tls.certresolver: "letsencrypt"
+          traefik.http.routers.api-service-router.tls: "true"
+  handlers:
+    - name: Restart Homepage
+      community.docker.docker_container:
+        name: homepage
+        state: started
+        restart: true
