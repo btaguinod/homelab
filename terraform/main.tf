@@ -21,16 +21,24 @@ provider "proxmox" {
     }
 }
 
-resource "proxmox_download_file" "ubuntu_cloud_image" {
+variable "pve_nodes" {
+    type = list(string)
+    default = ["server-1", "server-3", "server-4"]
+}
+
+resource "proxmox_download_file" "debian_cloud_image" {
+    for_each = toset(var.pve_nodes)
     content_type = "iso"
     datastore_id = "local"
-    node_name = "server-1"
-    url          = "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
+    node_name = each.key
+    url          = "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-13.7.0-amd64-netinst.iso"
 }
 
 resource "proxmox_virtual_environment_vm" "benedict_lab" {
-    node_name = "server-1"
-    name = "benedict-lab-1"
+    count = length(var.pve_nodes)
+    
+    node_name = var.pve_nodes[count.index]
+    name = "docker-swarm-${count.index + 1}"
 
     cpu {
         cores = 2
@@ -43,7 +51,7 @@ resource "proxmox_virtual_environment_vm" "benedict_lab" {
 
     disk {
         datastore_id = "local-lvm"
-        file_id = proxmox_download_file.ubuntu_cloud_image.id
+        file_id = proxmox_download_file.debian_cloud_image[var.pve_nodes[count.index]].id
         interface = "scsi0"
         size = 50
     }
@@ -58,7 +66,7 @@ resource "proxmox_virtual_environment_vm" "benedict_lab" {
     initialization {
         ip_config {
           ipv4 {
-            address = "10.127.0.8/24"
+            address = "10.127.0.${count.index + 8}/24"
             gateway = "10.127.0.1"
           }
         }
