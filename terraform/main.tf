@@ -26,12 +26,12 @@ variable "pve_nodes" {
     default = ["server-1", "server-3", "server-4"]
 }
 
-resource "proxmox_download_file" "debian_cloud_image" {
+resource "proxmox_download_file" "ubuntu_cloud_image" {
     for_each = toset(var.pve_nodes)
     content_type = "iso"
     datastore_id = "local"
     node_name = each.key
-    url          = "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-13.7.0-amd64-netinst.iso"
+    url          = "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
 }
 
 resource "proxmox_virtual_environment_vm" "benedict_lab" {
@@ -51,7 +51,7 @@ resource "proxmox_virtual_environment_vm" "benedict_lab" {
 
     disk {
         datastore_id = "local-lvm"
-        file_id = proxmox_download_file.debian_cloud_image[var.pve_nodes[count.index]].id
+        file_id = proxmox_download_file.ubuntu_cloud_image[var.pve_nodes[count.index]].id
         interface = "scsi0"
         size = 50
     }
