@@ -23,7 +23,7 @@ provider "proxmox" {
 
 variable "pve_nodes" {
     type = list(string)
-    default = ["server-1", "server-3", "server-4"]
+    default = ["server-1", "server-2", "server-3", "server-4"]
 }
 
 resource "proxmox_download_file" "ubuntu_cloud_image" {
