@@ -24,6 +24,13 @@
         state: present
         advertise_addr: "{{ ansible_host }}"
 
+    - name: Create overlay network
+      community.docker.docker_network:
+        name: swarm-network
+        driver: overlay
+        attachable: true
+        state: present
+
 - name: Join workers to swarm
   hosts: swarm_workers
   become: true

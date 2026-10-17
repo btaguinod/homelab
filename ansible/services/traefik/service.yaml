@@ -1,6 +1,6 @@
 # TODO: check if there's a way make sure this playbook isn't run without setup
 - name: Traefik install
-  hosts: swarm
+  hosts: swarm_manager
   become: true
   tasks: 
     - name: Create Traefik directory
@@ -14,30 +14,31 @@
         src: traefik.yaml
         dest: /etc/traefik/traefik.yaml
         mode: '0644'
-      # TODO: remove restart traefik once static config if finalized. Remove handler too
-      notify: Restart Traefik
+      register: traefik_config
 
     - name: Start Traefik container
-      community.docker.docker_container:
+      community.docker.docker_swarm_service:
         name: traefik
         image: traefik:3.7.13
-        state: started
-        restart_policy: always
-        published_ports:
-          - "80:80"
-          - "443:443"
-          - "8080:8080"
-        volumes:
-          - "/etc/traefik:/etc/traefik"
-          - "/var/run/docker.sock:/var/run/docker.sock:ro"
+        networks:
+          - swarm-network
+        placement:
+          constraints:
+            - "node.role==manager"
+        publish:
+          - { published_port: 80, target_port: 80, protocol: tcp, mode: host }
+          - { published_port: 443, target_port: 443, protocol: tcp, mode: host }
+          - { published_port: 8080, target_port: 8080, protocol: tcp, mode: host }
+        force_update: "{{ traefik_config.changed }}"
+        mounts:
+          - type: bind
+            source: /etc/traefik
+            target: /etc/traefik
+          - type: bind
+            source: /var/run/docker.sock
+            target: /var/run/docker.sock
+            readonly: true
         env:
           NAMECHEAP_API_KEY: "{{ vault_namecheap_api_key }}"
           NAMECHEAP_API_USER: "{{ vault_namecheap_api_user }}"
           TRAEFIK_LOG_LEVEL: DEBUG
-
-  handlers:
-    - name: Restart Traefik
-      community.docker.docker_container:
-        name: traefik
-        state: started
-        restart: true
