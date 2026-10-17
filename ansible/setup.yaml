@@ -15,7 +15,28 @@
         state: started
         enabled: true
 
+- name: Init swarm on manager
+  hosts: swarm_manager
+  become: true
+  tasks: 
     - name: Init a new swarm with default parameters
       community.docker.docker_swarm:
         state: present
         advertise_addr: "{{ ansible_host }}"
+
+- name: Join workers to swarm
+  hosts: swarm_workers
+  become: true
+  tasks:
+    - name: Get worker join token from manager
+      community.docker.docker_swarm_info:
+      register: swarm_info
+      delegate_to: "{{ groups['swarm_manager'] | first }}"
+      run_once: true
+
+    - name: Join swarm as worker
+      community.docker.docker_swarm:
+        state: join
+        advertise_addr: "{{ ansible_host }}"
+        remote_addrs: "{{ hostvars['swarm-server-1'].ansible_host }}"
+        join_token: "{{ swarm_info.swarm_facts.JoinTokens.Worker }}"
